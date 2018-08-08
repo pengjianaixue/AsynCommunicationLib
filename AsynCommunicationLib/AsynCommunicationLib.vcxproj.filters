@@ -42,7 +42,10 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="comdevice.cpp">
-      <Filter>头文件</Filter>
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Test.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

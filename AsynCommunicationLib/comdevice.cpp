@@ -1,4 +1,8 @@
+#include "stdafx.h"
 #include "comdevice.h"
+#ifdef _WIN32
+   
+#endif
 
 ComDevice::ComDevice():m_sPort(nullptr)
 {
@@ -13,10 +17,20 @@ ComDevice::~ComDevice()
 
 bool ComDevice::CreateCom(const std::string ComPort, int  setBaudRate, int  Databit, int  Stopbit, int setParity, int  SetFlowControl)
 {
-   m_sPort =  ::CreateFileW(_T("COM4"),GENERIC_READ|GENERIC_WRITE,0,
+#ifdef _UNICODE
+
+
+   m_sPort =  ::CreateFileW((LPCWCHAR)UTF8_To_string(ComPort).c_str(),GENERIC_READ|GENERIC_WRITE,0,
                       NULL,OPEN_EXISTING,
                       NULL,
                       NULL);
+#else
+	m_sPort = ::CreateFileA(ComPort.c_str(), GENERIC_READ | GENERIC_WRITE, 0,
+		NULL, OPEN_EXISTING,
+		NULL,
+		NULL);
+#endif // _UNICODE
+
    if(m_sPort==INVALID_HANDLE_VALUE)
    {
        return false;
@@ -76,5 +90,32 @@ bool ComDevice::IsOpen()
 {
     return m_sPort !=nullptr ? true:false;
 
+}
+
+std::string ComDevice::UTF8_To_string(const std::string & str)
+{
+	
+	int nwLen = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, NULL, 0);
+	wchar_t * pwBuf = new wchar_t[nwLen + 1];//一定要加1，不然会出现尾巴
+	memset(pwBuf, 0, nwLen * 2 + 2);
+
+	MultiByteToWideChar(CP_UTF8, 0, str.c_str(), str.length(), pwBuf, nwLen);
+
+	int nLen = WideCharToMultiByte(CP_ACP, 0, pwBuf, -1, NULL, NULL, NULL, NULL);
+
+	char * pBuf = new char[nLen + 1];
+
+	memset(pBuf, 0, nLen + 1);
+
+	WideCharToMultiByte(CP_ACP, 0, pwBuf, nwLen, pBuf, nLen, NULL, NULL);
+
+	std::string retStr = pBuf;
+	delete[]pBuf;
+	delete[]pwBuf;
+
+	pBuf = NULL;
+	pwBuf = NULL;
+	return retStr;
+	
 }
 

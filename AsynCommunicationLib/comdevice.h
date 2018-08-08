@@ -53,6 +53,9 @@ public:
     int WirteData(const char *Data,int wirtelength,int Timeout);
     bool CloseComPort();
     bool IsOpen();
+	//¹¦ÄÜº¯Êý
+	std::string UTF8_To_string(const std::string & str);
+	
 private:
     HANDLE m_sPort;
     DCB       m_PortAttribute;
